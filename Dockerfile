@@ -10,6 +10,7 @@ COPY pnpm-lock.yaml ./
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 COPY . .
+RUN pnpm prisma generate
 RUN pnpm run build
 
 FROM node:21-alpine
@@ -19,8 +20,10 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY --from=build /app/node_modules /app/node_modules
+COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/dist ./dist
+COPY ./entrypoint.sh ./entrypoint.sh
 
 EXPOSE 3000
 
-CMD ["node", "dist/index.js"]
+ENTRYPOINT ["/bin/sh", "./entrypoint.sh"]
