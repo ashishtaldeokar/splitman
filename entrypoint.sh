@@ -1,4 +1,4 @@
 #!/bin/bash
 
-pnpx prisma migrate deploy
+pnpm exec prisma migrate deploy
 node dist/index.js
